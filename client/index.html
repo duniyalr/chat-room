@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="./style.css"/> 
+  <title>ChatRoom</title>
+</head>
+<body style="background-color: gray;">
+
+  <div class="container shadow-lg p-3 mb-5 bg-white rounded alert alert-dark" style="margin-top: 3rem;">
+    <ul id="messages" style="height: 70vh; overflow-y: scroll;" class="alert alert-secondary"></ul>
+    <form class="row" id="form" action="" style="margin-left: 2rem;margin-right: 2rem;">
+      <input class="form form-control col-sm" id="input" autocomplete="off" style="margin: .5rem;"/>
+      <button class="btn btn-success col-3" id="button" style="margin: .5rem;">Send</button>
+    </form>
+  </div>
+
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let socket = io();
+
+  let form = document.getElementById('form');
+  let input = document.getElementById('input');
+  let messages = document.getElementById('messages');
+  console.log(messages.scrollHeight)
+
+
+  form.addEventListener('submit', (event) => {
+    messages.scroll({
+      top: messages.scrollHeight,
+      behavior: 'smooth'
+    })
+    event.preventDefault();
+    if(input.value) {
+      socket.emit('chat-message', input.value);
+      input.value = '';
+    }
+  });
+  
+  socket.on('broadcast-message', (message) => {
+    let item = document.createElement('li');
+    item.className = 'list-group-item list-group-item-success';
+    item.style.marginTop = '.5rem'
+    item.textContent = message;
+    messages.appendChild(item);
+    messages.scroll({
+      top: messages.scrollHeight,
+      behavior: 'smooth'
+    })
+  });
+
+</script>
+</html>
